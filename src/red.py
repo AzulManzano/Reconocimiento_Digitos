@@ -1,9 +1,8 @@
 import numpy as np
 import random
 import carga
-
-variable = []
-numero = int(input("Ingrese el numero que quiere ver de predicciones"))
+import grafica
+import copy
 
 
 def sigmoidea(parametro):
@@ -24,12 +23,16 @@ class Red(object):
         self.tamano = tamano
         self.sesgos = [np.random.randn(y, 1) for y in tamano[1:]]
         self.pesos = [np.random.randn(y, x) for x, y in zip(tamano[:-1], tamano[1:])]
-
+        
 
     def retroalimentacion(self,entrada):
-
+        
         for b, w in zip(self.sesgos, self.pesos):
+            
             entrada = sigmoidea(np.dot(w, entrada)+b)
+            
+            
+        
 
         return entrada
         
@@ -54,19 +57,16 @@ class Red(object):
 
 
     def evaluar(self,datos_prueba):
-        for (x, y) in datos_prueba:
-            if len(x) != 784:
-                print("paila")
+        
+            
             
         resultados_prueba = [(np.argmax(self.retroalimentacion(x)), y) for (x, y) in datos_prueba]
-        
-        i = 0
-        while i < numero:
-            variable.append(resultados_prueba[i])
-            i += 1
 
-        #Generar matrriz de aprobacion TASK
-        diagonal = 0 
+
+        return resultados_prueba
+
+    def matriz_de_confusion(self,resultados):
+        
         matriz = [[0, 0, 0, 0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0,0,0],
@@ -79,11 +79,11 @@ class Red(object):
                     [0,0,0,0,0,0,0,0,0,0]]
         
         num = [0,0,0,0,0,0,0,0,0,0]
-        for (x, y) in resultados_prueba:
+        for (x, y) in resultados:
             num[y] += 1
             matriz[x][y] +=1
         
-
+        diagonal = 0 
         i = 0
         j = 0 
         
@@ -93,16 +93,21 @@ class Red(object):
                 matriz[i][j] = round(matriz[i][j]/num[j],3)
 
                 if i == j:
-                    diagonal +=  matriz[i][j]
+                    diagonal += matriz[i][j]
+
                 j += 1
             i += 1
             j = 0
 
         i = 0
-        #while i <10:
-        #    print(matriz[i])
-        #    i +=1
-        print(diagonal)
+        while i <10:
+           print(matriz[i])
+           i +=1
+        print("")
+
+        return diagonal
+
+    def porcentaje_correctas(self, resultados_prueba):
 
         return sum(int(x == y) for (x, y) in resultados_prueba)
 
@@ -135,15 +140,7 @@ class Red(object):
 
         return (nabla_b, nabla_w)
 
-    def SGD(self, datos_entrenamiento, epocas, mini_lote_tamano, tasa_aprendisaje, datos_prueba=None):
-        """Train the neural network using mini-batch stochastic
-        gradient descent, The ``training_data`` is a list of tuples
-        ``(x, y)`` representing the training inputs and the desired
-        outputs, The other non-optional parameters are
-        self-explanatory, If ``test_data`` is provided then the
-        network will be evaluated against the test data after each
-        epoch, and partial progress printed out, This is useful for
-        tracking progress, but slows things down substantially."""
+    def SGD_sin_matriz(self, datos_entrenamiento, epocas, mini_lote_tamano, tasa_aprendisaje, datos_prueba=None):
 
         datos_entrenamiento = list(datos_entrenamiento)
         n = len(datos_entrenamiento)
@@ -155,88 +152,45 @@ class Red(object):
         for j in range(epocas):
             random.shuffle(datos_entrenamiento)
             mini_lotes = [ datos_entrenamiento[k:k+mini_lote_tamano] for k in range(0, n, mini_lote_tamano)]
+            
 
             for mini_lote in mini_lotes:
                 self.actualizacion_mini_lote(mini_lote, tasa_aprendisaje)
 
             if datos_prueba:
-                print("Epoch {} : {} / {}".format(j,self.evaluar(datos_prueba),n_prueba))
+                print("Generacion {} : {} / {}".format(j,self.porcentaje_correctas(self.evaluar(datos_prueba)),n_prueba))
+                
+                
             else:
-                print("Epoch {} complete".format(j))
-    
+                print("Generacion {} complete".format(j))
 
-#training_data , validation_data , test_data = mnist_loader ,load_data_wrapper ()
-#training_data , validation_data , test_data = carga.cargar_estructura_de_datos ()
-datos_entrenamiento, datos_validación, datos_prueba = carga.cargar_estructura_de_datos ()
+    def SGD_con_matriz(self, datos_entrenamiento, epocas, mini_lote_tamano, tasa_aprendisaje, datos_prueba=None):
 
-red = Red([784,30,10])
-red.SGD(datos_entrenamiento, 1, 10, 3.0, datos_prueba = datos_prueba)
+        datos_entrenamiento = list(datos_entrenamiento)
+        n = len(datos_entrenamiento)
 
+        if datos_prueba:
+            datos_prueba = list(datos_prueba)
+            n_prueba = len(datos_prueba)
 
+        for j in range(epocas):
+            random.shuffle(datos_entrenamiento)
+            mini_lotes = [ datos_entrenamiento[k:k+mini_lote_tamano] for k in range(0, n, mini_lote_tamano)]
+            
 
-# print(len(list(training_data)))
+            for mini_lote in mini_lotes:
+                self.actualizacion_mini_lote(mini_lote, tasa_aprendisaje)
 
-# # Separating the images from their values
-# # x -> input
-# # y -> output
-# # train_x are the images in the train_set, train_y are the corresponding digits
-#     # represented in those images
-# train_x, train_y = training_data
-# # test_x are the images in the test_set, test_y are the corresponding digits
-#     # represented in those images
-# test_x, test_y = test_data
+            if datos_prueba:
+                print("Generacion {} : {} / {}".format(j,self.porcentaje_correctas(self.evaluar(datos_prueba)),n_prueba))
+                if j == epocas - 1:
+                    print("la exactitud del modelo es de " + str(round(self.matriz_de_confusion(self.evaluar(datos_prueba)),2))+" siendo 10.0 perfecto")
+                
+            else:
+                print("Generacion {} complete".format(j))
 
-
-
-
-#net = Network ([784 , 30, 10])
-#net.SGD(training_data , 20, 10, 3.0, test_data = test_data )
-
-
-
-# Prueba
-
-
-
-import gzip
-import pickle
-
-# read the file in read mode as binary 
-with gzip.open("C:/Users/USER/Documents/Semestre 10°/Analisis numerico/Analisis-numerico/data/mnist.pkl.gz", 'rb') as file_contents:
-    train_set, valid_set, test_set = pickle.load(file_contents, encoding='latin1')
-
-# Separating the images from their values
-# x -> input
-# y -> output
-# train_x are the images in the train_set, train_y are the corresponding digits
-    # represented in those images
-train_x, train_y = train_set
-# test_x are the images in the test_set, test_y are the corresponding digits
-    # represented in those images
-test_x, test_y = test_set
-
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-# Plotting numpy arrays as images using matplotlib
-# show first 5 images in the training set
-n = 0
-i = 0
-
-while n<numero: 
-    respuesta = True
-    
-    while respuesta == True:
-        # plt.subplot(1, 5, i + 1)
-        if variable[n][1] == train_y[i]:
-
-            plt.imshow(train_x[i].reshape((28, 28)), cmap=cm.gray_r) # use gray colormap
-            plt.axis('off')
-            # plt.subplots_adjust(right = 2)
-            plt.title('Predicción = %i' % variable[n][0])
-            plt.show()
-
-            respuesta = False
-        i += 1
-    n += 1
-
-
+    def predecir(self,elemento_predecir):
+        #print(self.retroalimentacion(elemento_predecir))
+        retorn = copy.deepcopy(elemento_predecir)
+        print("")
+        print("La red neuronal predice que el numero que usted ingreso es un " + str(np.argmax(self.retroalimentacion(retorn))))
