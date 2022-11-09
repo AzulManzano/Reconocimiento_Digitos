@@ -2,8 +2,10 @@ import pickle as cPickle
 import numpy as np
 import gzip
 
+
+
 def cargar_datos():
-    datos = gzip.open("C:/Users/USER/Documents/Semestre 10°/Analisis numerico/Reconocimiento_Digitos/Datos/mnist.pkl.gz", 'rb')
+    datos = gzip.open("./Reconocimiento_Digitos/datos/mnist.pkl.gz", 'rb')
     datos_entrenamiento, datos_validación, datos_prueba = cPickle.load(datos, encoding="latin1")
     datos.close()
 

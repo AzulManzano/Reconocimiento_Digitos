@@ -100,6 +100,7 @@ class Red(object):
             j = 0
 
         i = 0
+        print("")
         while i <10:
            print(matriz[i])
            i +=1
@@ -193,4 +194,30 @@ class Red(object):
         #print(self.retroalimentacion(elemento_predecir))
         retorn = copy.deepcopy(elemento_predecir)
         print("")
-        print("La red neuronal predice que el numero que usted ingreso es un " + str(np.argmax(self.retroalimentacion(retorn))))
+        arreglo_relaciones = self.retroalimentacion(retorn)
+        prediccion = str(np.argmax(arreglo_relaciones))
+        total = (np.sum(arreglo_relaciones))
+        
+        arreglo_probalidades = []
+        arreglo_probalidades_str = []
+
+        for i in arreglo_relaciones:
+            arreglo_probalidades.append(np.round(i[0]/total,4))
+
+        for i in arreglo_probalidades:
+            i_str = str(i)
+            
+            if len(i_str) != 6:
+                i_str = i_str + "001"
+            arreglo_probalidades_str.append(i_str)
+        print("La red neuronal predice que el numero que usted ingreso es un ---> " + prediccion+" <---")
+        print("")
+        print("Y las probabilidades asociado a cada digito son las siguientes:")
+        print("-----------------------------------------------------------------------------------------------------")
+        
+        str_probabilidades = ""
+        contador = 0 
+        for i in arreglo_probalidades_str:
+            str_probabilidades = str_probabilidades + str(contador)+" ---> "+ i + "  | "
+            contador += 1
+        print(str_probabilidades)
