@@ -6,33 +6,67 @@ import carga
 import grafica
 import red
 
+#Genera una instancia de la clase Red y realiza un pequeño entrenamiento de la red neuronal
+#Parametros->  datos_entrenamiento: Datos iniciales de entrenamiento
+#              datos_validación: Datos inicialies de verificacion
+#              datos_prueba: Datos iniciales de prueba
+#Retorno-> red_neuronal: Red neuronal con un 90% de presicion. 
 def ejecutar_cargar(datos_entrenamiento, datos_validación, datos_prueba):
     red_neuronal = red.Red([784,30,10])
     red_neuronal.SGD_sin_matriz(datos_entrenamiento, 5, 10, 3.0, datos_prueba = datos_prueba)
 
     return red_neuronal
 
+
+#Ejecuta un re-entrenamiento con diferentes subconjuntoos de los datos de prueba, los cuales
+# tiene difernetes tamaños y genere una matriz de confusion con los resultados obtenidos. 
+#Parametros->  datos_entrenamiento: Datos iniciales de entrenamiento
+#              datos_validación: Datos inicialies de verificacion
+#              datos_prueba: Datos iniciales de prueba
+#Retorno-> None
 def ejecurar_estadisticas(datos_entrenamiento, datos_validación, datos_prueba)->None:
     red_neuronal = red.Red([784,30,10])
     red_neuronal.SGD_con_matriz(datos_entrenamiento, 5, 10, 3.0, datos_prueba = datos_prueba)
      
+
+#Realiza un entreno adicional sobre una red neuronal ya creada, con unas generaciones espesificas. 
+#Parametros->  datos_entrenamiento: Datos iniciales de entrenamiento
+#              datos_validación: Datos inicialies de verificacion
+#              datos_prueba: Datos iniciales de prueba
+#              red: Red neuronal ya creada
+#              num_generaciopnes: Numero de generaciones adicionales que quiere entrenar
+#Retorno-> None
 def ejecutar_entrenar(red,datos_entrenamiento, datos_validación, datos_prueba, num_generaciopnes):
     red.SGD_sin_matriz(datos_entrenamiento, num_generaciopnes, 10, 3.0, datos_prueba = datos_prueba)
     
-    
+
+#Despliega una ventana donde el usuario puede dibujar un digito para que la red neuronal, ya creada, 
+# realice una prediccion del digito dibujado. 
+#Parametros->  red: Red neuronal ya creada
+#Retorno-> imagen: Arreglo de tamaño 784x1 donde cada posicion toma un un pixel del bujo hecho por el 
+#                  usuario. 
 def ejecutar_predecir(red):
     grafica.main()
     imagen = grafica.retorrnar_imagen()
     red.predecir(imagen)
     
-    
     return imagen
 
+
+#Despliega una ventana donde el usuario puede visualizar el dibujo hecho anterirmente hecho para que 
+# fuera predecido.
+#Parametros->  imagen_entrada: Arreglo de tamaño 784x1 donde cada posicion toma un un pixel del bujo 
+#                              hecho por el usuario.
+#Retorno-> None
 def ejecutar_mostrar_imagen(imagen_entrada):
     plt.imshow(imagen_entrada.reshape((28, 28)), cmap=cm.gray_r)  
     plt.axis('off')
     plt.show()
 
+
+#Muestra el menu del programa.
+#Parametros-> None
+#Retorno-> None
 def mostrar_menu()->None:
 
     print("-------------------------------------")
@@ -49,7 +83,9 @@ def mostrar_menu()->None:
     print("")
     
     
-
+#Inicia el programa para mostrar el menu y poder ejecurar alguna de las opciones del menu.
+#Parametros-> None
+#Retorno-> None
 def ejecutar_programa()->None:
 
     opcion = 0
@@ -129,7 +165,7 @@ def ejecutar_programa()->None:
             if red_neuronal== None:
                 print("Por favor carge primero el modelo ")
             else:
-                #Falta todo el proceso para predecir el digito
+                
                 imagen = ejecutar_predecir(red_neuronal)
                 
                 
