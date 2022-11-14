@@ -3,7 +3,10 @@ import numpy as np
 import gzip
 
 
-
+#Le y carga los datos de la base de datos mnist. 
+#Parametros->  None
+#Retorno-> Una tupla de tres arreglos de datos, los cuales cuentan con la informacion de entrenamiento
+#          la informacion de validacion y la informacion para realizar las pruebas. 
 def cargar_datos():
     datos = gzip.open("./Reconocimiento_Digitos/datos/mnist.pkl.gz", 'rb')
     datos_entrenamiento, datos_validación, datos_prueba = cPickle.load(datos, encoding="latin1")
@@ -12,6 +15,10 @@ def cargar_datos():
     return (datos_entrenamiento, datos_validación, datos_prueba)
 
 
+#Apartir de los datos cargados crea y modifica las estructuras de forma tal que se puedan trabajar con ellas. 
+#Parametros->  None
+#Retorno-> Una tupla de tres arreglos de datos, los cuales cuentan con la informacion de entrenamiento
+#          la informacion de validacion y la informacion para realizar las pruebas. 
 def cargar_estructura_de_datos():
 
     d_entre, d_vali, d_pru = cargar_datos()
@@ -29,6 +36,10 @@ def cargar_estructura_de_datos():
     return (datos_entrenamiento, datos_validación, datos_prueba)
 
 
+#Vectoriza unitariamente un arreglo de 10 pisiciones. 
+#Parametros->  posicion: Posicion donde se quiere que el valor sea 1.
+#Retorno-> arreglo: Genera un arreglo de 10 arreglos donde en la posicion dada por párametro hay un uno, 
+#          y en el resto son ceros. 
 def vectorizar(posicion):
     arreglo = np.zeros((10, 1))
     arreglo[posicion] = 1.0

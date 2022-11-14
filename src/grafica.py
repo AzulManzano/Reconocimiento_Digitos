@@ -17,6 +17,9 @@ draw = ImageDraw.Draw(pil_image)
 
 imagen = None
 
+#Retorna una copia de la imagen como arreglo, en el formato 784x1.
+#Parametros->  None
+#Retorno-> Retorna la imagen en el formato indicado. 
 def retorrnar_imagen():
     global deawing_area,pil_image,draw,imagen
     deawing_area = ""
@@ -27,15 +30,27 @@ def retorrnar_imagen():
     
     return retorn
 
+
+#Sale de la ventana emergente.
+#Parametros->  event: Evento que se relice con el mouse.
+#Retorno-> None
 def quitar(event):
     sys.exit()
 
+
+#Deja en blanco nuevamente el lienzo de la ventana emergente.
+#Parametros->  event: Evento que se relice con el mouse.
+#Retorno-> None
 def limpiar(event):
     global deawing_area,pil_image,draw
     deawing_area.delete("all")
     pil_image =Image.new("1", (280,280),"white")
     draw = ImageDraw.Draw(pil_image)
 
+
+#Permite apartir de el puntero del mouse graficar un dibujo en linea negra.
+#Parametros->  event: Evento que se relice con el mouse.
+#Retorno-> None
 def graficar(event):
     global deawing_area,x,y,count,image_coun
     newx, newy = event.x, event.y
@@ -49,10 +64,18 @@ def graficar(event):
     draw.line((x,y,newx,newy),width = 10)
     x,y =newx,newy
 
+
+#Indica cuando se dejo de dibujar, para que no se siga haciendo la linea negra.
+#Parametros->  event: Evento que se relice con el mouse.
+#Retorno-> None
 def graficar_finalizo(event):
     global x,y 
     x,y = None,None
 
+
+#Guarda la imagen dubujada como un arreglo en el formato 784x1.
+#Parametros->  event: Evento que se relice con el mouse.
+#Retorno-> None
 def guardar(event):
     global pil_image, image_name,image_coun, imagen
     image_coun +=1
@@ -71,6 +94,9 @@ def guardar(event):
     imagen = np_array 
 
 
+#Genera la ventana emergente con los botones y el lienzo listo para realizar un dunujo.
+#Parametros-> None
+#Retorno-> None
 def main():
     global deawing_area
     win = Tk()
