@@ -25,4 +25,4 @@ Despues de cargar los datos puede tomar cualquier otra opcion de el menu. Al esc
 # Autores
  Alejandro Caicedo, Camila Gonzalez, Azul Manzano
 
- Le damos un agradecimiento especial al profesor Mauricio Velasco Pues fue el precursor de este pproyecto y guia importante en el mismo. 
+ Le damos un agradecimiento especial al profesor Mauricio Velasco pues fue el precursor de este proyecto y guia importante en el mismo. 
